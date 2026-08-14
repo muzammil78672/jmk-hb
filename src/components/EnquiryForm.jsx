@@ -54,11 +54,11 @@ export default function EnquiryForm({
 }) {
   const id = useId()
   const formRef = useRef(null)
-  const honeyRef = useRef(null)
   const [searchParams] = useSearchParams()
   const [form, setForm] = useState(empty)
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
   const [errorMsg, setErrorMsg] = useState('')
+  const [serverMsg, setServerMsg] = useState('')
 
   useEffect(() => {
     const product = searchParams.get('product')
@@ -76,9 +76,9 @@ export default function EnquiryForm({
   }, [searchParams, productOptions])
 
   useEffect(() => {
-    if (status !== 'success') return
+    if (status !== 'success' && status !== 'error') return
     formRef.current
-      ?.querySelector('.form-success')
+      ?.querySelector(status === 'success' ? '.form-success' : '.form-error')
       ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [status])
 
@@ -87,6 +87,7 @@ export default function EnquiryForm({
       if (status !== 'idle') {
         setStatus('idle')
         setErrorMsg('')
+        setServerMsg('')
       }
       setForm((prev) => ({ ...prev, [field]: e.target.value }))
     }
@@ -120,45 +121,35 @@ export default function EnquiryForm({
   async function handleSubmit(e) {
     e.preventDefault()
     if (status === 'submitting') return
-
-    // Bots that fill the honeypot — fake success, do not send.
-    if (honeyRef.current?.value) {
-      setStatus('success')
-      setForm(empty)
-      return
-    }
-
     if (!validate()) return
 
     setStatus('submitting')
     setErrorMsg('')
+    setServerMsg('')
 
     const subject = `JMK Enquiry · ${form.market || 'General'} · ${form.product || 'Product'}`
 
-    const payload = {
-      name: form.name.trim(),
-      company: form.company.trim() || '—',
-      email: form.email.trim(),
-      phone: form.phone.trim(),
-      market: form.market,
-      location: form.location.trim() || '—',
-      product: form.product,
-      requirement: form.requirement.trim() || '—',
-      _subject: subject,
-      _template: 'table',
-      _captcha: 'false',
-      _replyto: form.email.trim(),
-      _cc: site.formSubmitCc,
-    }
+    // FormData is the most reliable FormSubmit path from browsers.
+    const body = new FormData()
+    body.append('name', form.name.trim())
+    body.append('company', form.company.trim() || '—')
+    body.append('email', form.email.trim())
+    body.append('phone', form.phone.trim())
+    body.append('market', form.market)
+    body.append('location', form.location.trim() || '—')
+    body.append('product', form.product)
+    body.append('requirement', form.requirement.trim() || '—')
+    body.append('_subject', subject)
+    body.append('_template', 'table')
+    body.append('_captcha', 'false')
+    body.append('_replyto', form.email.trim())
+    body.append('_cc', site.formSubmitCc)
 
     try {
       const res = await fetch(site.formSubmitEndpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(payload),
+        headers: { Accept: 'application/json' },
+        body,
       })
 
       const data = await res.json().catch(() => null)
@@ -170,6 +161,7 @@ export default function EnquiryForm({
         )
       }
 
+      setServerMsg(typeof data?.message === 'string' ? data.message : '')
       setStatus('success')
       setForm(empty)
     } catch (err) {
@@ -208,17 +200,6 @@ export default function EnquiryForm({
       onSubmit={handleSubmit}
       noValidate
     >
-      {/* Honeypot — not controlled by React, so autofill does not block real users */}
-      <input
-        ref={honeyRef}
-        className="hp-field"
-        type="text"
-        name="_honey"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-      />
-
       <div className="form-grid">
         <div className="field">
           <Label htmlFor={`${id}-name`} required>
@@ -376,9 +357,23 @@ export default function EnquiryForm({
       </p>
 
       {status === 'success' && (
-        <p className="form-success" role="status">
-          Thank you — your enquiry was sent. Our team will reply shortly.
-        </p>
+        <div className="form-success" role="status">
+          <p>
+            <strong>Submitted to FormSubmit.</strong> Check these inboxes (and Spam /
+            Promotions):
+          </p>
+          <ul>
+            <li>
+              <strong>{site.email}</strong> — open any email from FormSubmit and click{' '}
+              <em>Confirm / Activate</em> (required once). Then submit the form again.
+            </li>
+            <li>
+              After activation, new enquiries arrive here and are CC’d to{' '}
+              <strong>{site.formSubmitCc}</strong>.
+            </li>
+          </ul>
+          {serverMsg ? <p className="form-server-msg">{serverMsg}</p> : null}
+        </div>
       )}
 
       {status === 'error' && (
