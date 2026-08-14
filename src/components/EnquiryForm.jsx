@@ -12,6 +12,7 @@ const empty = {
   location: '',
   product: '',
   requirement: '',
+  _honey: '',
 }
 
 function Label({ htmlFor, children, required }) {
@@ -23,7 +24,7 @@ function Label({ htmlFor, children, required }) {
   )
 }
 
-function buildMessage(form) {
+function buildWhatsAppMessage(form) {
   return [
     'Business enquiry from website',
     '',
@@ -49,7 +50,8 @@ export default function EnquiryForm({
   const id = useId()
   const [searchParams] = useSearchParams()
   const [form, setForm] = useState(empty)
-  const [sent, setSent] = useState(false)
+  const [status, setStatus] = useState('idle') // idle | submitting | success | error
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     const product = searchParams.get('product')
@@ -60,9 +62,7 @@ export default function EnquiryForm({
       ...(market === 'domestic' || market === 'international'
         ? {
             market:
-              market === 'domestic'
-                ? 'Domestic — India'
-                : 'International',
+              market === 'domestic' ? 'Domestic — India' : 'International',
           }
         : {}),
     }))
@@ -70,31 +70,78 @@ export default function EnquiryForm({
 
   function update(field) {
     return (e) => {
-      setSent(false)
+      if (status !== 'idle') {
+        setStatus('idle')
+        setErrorMsg('')
+      }
       setForm((prev) => ({ ...prev, [field]: e.target.value }))
     }
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    const body = buildMessage(form)
-    const subject = encodeURIComponent(
-      `${form.market || 'Enquiry'}: ${form.product || 'Sandalwood materials'}`,
-    )
-    window.location.href = `mailto:${site.email}?subject=${subject}&body=${encodeURIComponent(body)}`
-    setSent(true)
+    if (form._honey) return
+    if (status === 'submitting') return
+
+    setStatus('submitting')
+    setErrorMsg('')
+
+    const subject = `JMK Enquiry · ${form.market || 'General'} · ${form.product || 'Product'}`
+
+    const payload = {
+      name: form.name,
+      company: form.company || '—',
+      email: form.email,
+      phone: form.phone,
+      market: form.market,
+      location: form.location || '—',
+      product: form.product,
+      requirement: form.requirement || '—',
+      _subject: subject,
+      _template: 'table',
+      _captcha: false,
+      _honey: form._honey,
+      _replyto: form.email,
+      _cc: site.formSubmitCc,
+      _autoresponse: `Thank you for contacting ${site.name} (${site.division}). We have received your enquiry and will respond shortly.`,
+    }
+
+    try {
+      const res = await fetch(site.formSubmitEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Could not send enquiry. Please try again.')
+      }
+
+      setStatus('success')
+      setForm(empty)
+    } catch (err) {
+      setStatus('error')
+      setErrorMsg(
+        err?.message ||
+          'Something went wrong. Please email us directly or try WhatsApp.',
+      )
+    }
   }
 
   function handleWhatsApp(e) {
     const formEl = e.currentTarget.form
     if (formEl && !formEl.reportValidity()) return
-    const body = buildMessage(form)
+    const body = buildWhatsAppMessage(form)
     window.open(
       `${site.whatsapp}?text=${encodeURIComponent(body)}`,
       '_blank',
       'noopener,noreferrer',
     )
-    setSent(true)
   }
 
   const locationLabel =
@@ -104,8 +151,22 @@ export default function EnquiryForm({
         ? 'Destination Country'
         : 'City / State / Country'
 
+  const busy = status === 'submitting'
+
   return (
-    <form className="enquiry-form" onSubmit={handleSubmit}>
+    <form className="enquiry-form" onSubmit={handleSubmit} noValidate={false}>
+      {/* Honeypot — hidden from users, blocks basic bots */}
+      <input
+        className="hp-field"
+        type="text"
+        name="_honey"
+        value={form._honey}
+        onChange={update('_honey')}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+      />
+
       <div className="form-grid">
         <div className="field">
           <Label htmlFor={`${id}-name`} required>
@@ -116,6 +177,7 @@ export default function EnquiryForm({
             name="name"
             autoComplete="name"
             required
+            disabled={busy}
             value={form.name}
             onChange={update('name')}
           />
@@ -129,6 +191,7 @@ export default function EnquiryForm({
             name="company"
             autoComplete="organization"
             required={companyRequired}
+            disabled={busy}
             value={form.company}
             onChange={update('company')}
           />
@@ -143,6 +206,7 @@ export default function EnquiryForm({
             type="email"
             autoComplete="email"
             required
+            disabled={busy}
             value={form.email}
             onChange={update('email')}
           />
@@ -157,6 +221,7 @@ export default function EnquiryForm({
             type="tel"
             autoComplete="tel"
             required
+            disabled={busy}
             value={form.phone}
             onChange={update('phone')}
           />
@@ -170,6 +235,7 @@ export default function EnquiryForm({
               id={`${id}-market`}
               name="market"
               required
+              disabled={busy}
               value={form.market}
               onChange={update('market')}
             >
@@ -188,6 +254,7 @@ export default function EnquiryForm({
             name="location"
             autoComplete="address-level2"
             required={locationRequired}
+            disabled={busy}
             placeholder={
               form.market === 'Domestic — India'
                 ? 'e.g. Indore, Madhya Pradesh'
@@ -208,6 +275,7 @@ export default function EnquiryForm({
               id={`${id}-product`}
               name="product"
               required
+              disabled={busy}
               value={form.product}
               onChange={update('product')}
             >
@@ -228,26 +296,44 @@ export default function EnquiryForm({
             id={`${id}-requirement`}
             name="requirement"
             required={requirementRequired}
+            disabled={busy}
             placeholder="Grade or brand preference, quantity, packing and delivery notes..."
             value={form.requirement}
             onChange={update('requirement')}
           />
         </div>
       </div>
+
       <div className="form-actions form-actions-split">
-        <button className="btn dark" type="submit">
-          Email Enquiry
+        <button className="btn dark" type="submit" disabled={busy}>
+          {busy ? 'Sending…' : 'Send Enquiry'}
         </button>
-        <button className="btn primary" type="button" onClick={handleWhatsApp}>
-          WhatsApp Enquiry
+        <button
+          className="btn primary"
+          type="button"
+          disabled={busy}
+          onClick={handleWhatsApp}
+        >
+          WhatsApp
         </button>
       </div>
+
       <p className="form-hint">
-        Your details open as a ready-to-send message — no account required.
+        Enquiries are emailed to our sales team. WhatsApp is available if you prefer a
+        quick chat.
       </p>
-      {sent && (
+
+      {status === 'success' && (
         <p className="form-success" role="status">
-          Draft prepared. Send the message from your email or WhatsApp to reach us.
+          Thank you — your enquiry was sent. Our team will reply shortly. You should also
+          receive a short confirmation email.
+        </p>
+      )}
+
+      {status === 'error' && (
+        <p className="form-error" role="alert">
+          {errorMsg} Or write to{' '}
+          <a href={`mailto:${site.email}`}>{site.email}</a>.
         </p>
       )}
     </form>

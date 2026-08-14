@@ -1397,6 +1397,15 @@ section {
   color: var(--muted);
 }
 
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .form-actions .btn:disabled {
   opacity: 0.7;
   cursor: wait;
@@ -1413,6 +1422,22 @@ section {
   color: #1d3324;
   font-weight: 600;
   font-size: 0.92rem;
+}
+
+.form-error {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #f8eeee;
+  border: 1px solid #e0c4c4;
+  color: #5c2424;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.form-error a {
+  color: inherit;
+  text-decoration: underline;
 }
 
 .contact-card {

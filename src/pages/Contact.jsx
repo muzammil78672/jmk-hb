@@ -18,8 +18,8 @@ export default function Contact() {
             <div className="eyebrow">Business Enquiry</div>
             <h2 className="form-card-title">Domestic or International</h2>
             <p className="contact-intro">
-              Select your market, then add company details, product and quantity. We
-              reply by email or WhatsApp with the relevant next steps.
+              Select your market, then add company details, product and quantity. Your
+              enquiry is emailed to our sales team — or use WhatsApp for a quick chat.
             </p>
             <EnquiryForm companyRequired locationRequired requirementRequired />
           </div>
