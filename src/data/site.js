@@ -11,7 +11,7 @@ export const site = {
     'One catalogue for both markets — domestic supply across India and international trade enquiries.',
   email: 'jmk.hb.sales53@gmail.com',
   /** FormSubmit.co AJAX endpoint — confirm the inbox once on first live submission. */
-  formSubmitEndpoint: 'https://formsubmit.co/ajax/jmk.hb.sales53@gmail.com',
+  formSubmitEndpoint: 'https://formsubmit.co/jmk.hb.sales53@gmail.com',
   formSubmitCc: 'cmuzammil786@gmail.com',
   phones: [
     { display: '+91 94250 92352', href: 'tel:+919425092352' },
