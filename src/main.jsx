@@ -4,9 +4,13 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './index.css'
 
+// Vite BASE_URL is `/` locally and `/jmk-hb/` on GitHub Pages.
+// React Router expects no trailing slash (except for root).
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename === '/' ? undefined : basename}>
       <App />
     </BrowserRouter>
   </StrictMode>,
