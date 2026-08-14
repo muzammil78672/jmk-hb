@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="JMK">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e0b86a"/>
+      <stop offset="55%" stop-color="#c59d5f"/>
+      <stop offset="100%" stop-color="#a8792d"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#gold)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M62 18 V148 H28"/>
+    <path d="M62 18 H128 L90 68 L128 118"/>
+    <path d="M62 118 L128 148"/>
+    <circle cx="28" cy="128" r="20"/>
+  </g>
+  <text x="28" y="136" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#c59d5f">श्री</text>
+</svg>

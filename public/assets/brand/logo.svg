@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 150" role="img" aria-labelledby="title desc">
+<title id="title">Jiwakhan Musabhai Kanchwala</title><desc id="desc">Modern JMK monogram with 1939 heritage mark</desc>
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#c99a3b"/><stop offset="1" stop-color="#f0c66d"/></linearGradient></defs>
+<g fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+<path d="M28 120V30h72l-32 31 32 31H28"/>
+<path d="M56 30v90"/>
+<path d="M68 30l31 30"/>
+<path d="M10 91c7-22 24-30 42-20-9 4-16 10-20 21 9-3 18-3 27 1"/>
+</g>
+<text x="120" y="62" font-family="Georgia,serif" font-size="34" font-weight="700" fill="#f0d08a">Jiwakhan Musabhai</text>
+<text x="120" y="101" font-family="Georgia,serif" font-size="34" font-weight="700" fill="#f0d08a">Kanchwala</text>
+<text x="121" y="128" font-family="Arial,sans-serif" font-size="13" letter-spacing="2.8" fill="#ead9b3">SANDALWOOD &amp; FRAGRANCE RAW MATERIALS · SINCE 1939</text>
+</svg>
