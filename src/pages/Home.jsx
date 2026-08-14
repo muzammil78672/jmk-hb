@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { site } from '../data/site'
 import { products, featuredProductIds } from '../data/products'
+import { asset } from '../utils/asset'
 
 const featured = featuredProductIds
   .map((id) => products.find((p) => p.id === id))
@@ -50,7 +51,7 @@ export default function Home() {
       <section className="hero hero-bleed">
         <div
           className="hero-bg"
-          style={{ backgroundImage: "url('/assets/products/hero-natural.jpg')" }}
+          style={{ backgroundImage: `url('${asset('assets/products/hero-natural.jpg')}')` }}
           aria-hidden="true"
         />
         <div className="hero-veil" aria-hidden="true" />
@@ -116,7 +117,7 @@ export default function Home() {
         <div className="container legacy-grid">
           <div className="legacy-media" data-reveal>
             <img
-              src="/assets/products/legacy-natural.jpg"
+              src={asset('assets/products/legacy-natural.jpg')}
               alt="Sandalwood powder and heartwood representing the JMK legacy"
               loading="lazy"
               width={2000}

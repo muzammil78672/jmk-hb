@@ -1,9 +1,11 @@
+import { asset } from '../utils/asset'
+
 /** Product catalogue from JMK sandalwood & HB Grinders brochures. */
 export const products = [
   {
     id: 'powder',
     title: 'Sandalwood Powder',
-    img: '/assets/products/sandalwood-powder.jpg',
+    img: asset('assets/products/sandalwood-powder.jpg'),
     alt: 'Sandalwood powder raw material',
     text: 'Finely processed sandalwood powder for incense manufacturing, ritual use, cosmetics and fragrance applications.',
     size: null,
@@ -11,7 +13,7 @@ export const products = [
   {
     id: 'pieces1',
     title: 'Sandalwood Pieces No. 1',
-    img: '/assets/products/pieces-no1.jpg',
+    img: asset('assets/products/pieces-no1.jpg'),
     alt: 'Sandalwood Pieces No. 1',
     text: 'Sorted sandalwood pieces for commercial supply. Typical size range: 20 g to 80 g.',
     size: '20 g to 80 g',
@@ -19,7 +21,7 @@ export const products = [
   {
     id: 'pieces2',
     title: 'Sandalwood Pieces No. 2',
-    img: '/assets/products/pieces-no2.jpg',
+    img: asset('assets/products/pieces-no2.jpg'),
     alt: 'Sandalwood Pieces No. 2',
     text: 'Larger sandalwood pieces suited to bulk and wholesale requirements. Available in 1 kg to 3 kg.',
     size: '1 kg to 3 kg',
@@ -27,7 +29,7 @@ export const products = [
   {
     id: 'logs',
     title: 'Sandalwood Logs No. 1',
-    img: '/assets/products/logs-no1.jpg',
+    img: asset('assets/products/logs-no1.jpg'),
     alt: 'Sandalwood Logs No. 1',
     text: 'Sandalwood logs for processing and trade. Typical size range: 1 kg to 3 kg.',
     size: '1 kg to 3 kg',
@@ -35,7 +37,7 @@ export const products = [
   {
     id: 'scented',
     title: 'Scented Pieces',
-    img: '/assets/products/scented-pieces.jpg',
+    img: asset('assets/products/scented-pieces.jpg'),
     alt: 'Scented pieces for hawan and ceremonial use',
     text: 'Scented wood pieces for hawan (ceremonial fire offerings) and related ritual applications.',
     size: null,
@@ -43,7 +45,7 @@ export const products = [
   {
     id: 'chips',
     title: 'Sandalwood Chips',
-    img: '/assets/products/sandalwood-chips.jpg',
+    img: asset('assets/products/sandalwood-chips.jpg'),
     alt: 'Sandalwood chips',
     text: 'Sandalwood chips for pooja samagri (ritual offerings), handicrafts and aromatic use.',
     size: null,
@@ -51,7 +53,7 @@ export const products = [
   {
     id: 'heartwood',
     title: 'Sandalwood Heartwood',
-    img: '/assets/products/heartwood.jpg',
+    img: asset('assets/products/heartwood.jpg'),
     alt: 'Sandalwood heartwood',
     text: 'Heartwood material suited to sandalwood oil extraction and fragrance processing.',
     size: null,
@@ -59,7 +61,7 @@ export const products = [
   {
     id: 'rakht',
     title: 'Rakht Sandalwood Powder',
-    img: '/assets/products/rakht-powder.jpg',
+    img: asset('assets/products/rakht-powder.jpg'),
     alt: 'Rakht sandalwood powder',
     text: 'Coloured sandalwood powder for specialised incense and ritual formulations.',
     size: null,
@@ -67,7 +69,7 @@ export const products = [
   {
     id: 'green-powder',
     title: 'Scented Green Colour Agarbatti Powder',
-    img: '/assets/products/green-agarbatti-powder.jpg',
+    img: asset('assets/products/green-agarbatti-powder.jpg'),
     alt: 'Scented green colour agarbatti powder',
     text: 'Coloured, scented powder for agarbatti (incense stick) manufacturing.',
     size: null,
@@ -75,7 +77,7 @@ export const products = [
   {
     id: 'red-chips',
     title: 'Red Wood Chips',
-    img: '/assets/products/red-wood-chips.jpg',
+    img: asset('assets/products/red-wood-chips.jpg'),
     alt: 'Red wood chips',
     text: 'Wood chips for incense manufacturing and related aromatic applications.',
     size: null,
@@ -83,7 +85,7 @@ export const products = [
   {
     id: 'mysore',
     title: 'Mysore Sandalwood',
-    img: '/assets/products/mysore-sandalwood.jpg',
+    img: asset('assets/products/mysore-sandalwood.jpg'),
     alt: 'Mysore sandalwood powder packaging',
     text: 'Mysore sandalwood powder (superior dust) for premium incense and fragrance use.',
     size: null,
@@ -91,7 +93,7 @@ export const products = [
   {
     id: 'mysore-malyagiri',
     title: 'Mysore Malyagiri Sandalwood',
-    img: '/assets/products/mysore-malyagiri.jpg',
+    img: asset('assets/products/mysore-malyagiri.jpg'),
     alt: 'Mysore Malyagiri sandalwood powder',
     text: 'Mysore Malyagiri sandalwood powder for buyers seeking a named regional grade.',
     size: null,
@@ -99,7 +101,7 @@ export const products = [
   {
     id: 'crown',
     title: 'Crown Sandalwood',
-    img: '/assets/products/crown-sandalwood.jpg',
+    img: asset('assets/products/crown-sandalwood.jpg'),
     alt: 'Crown brand sandalwood powder',
     text: 'Crown brand sandalwood powder for wholesale and branded retail packing.',
     size: null,
@@ -107,7 +109,7 @@ export const products = [
   {
     id: 'malayagiri',
     title: 'Malayagiri Sandalwood',
-    img: '/assets/products/malayagiri-sandalwood.jpg',
+    img: asset('assets/products/malayagiri-sandalwood.jpg'),
     alt: 'Malayagiri chandan powder',
     text: 'Malayagiri sandalwood (chandan) powder for incense, ritual and fragrance supply.',
     size: null,
@@ -124,12 +126,12 @@ export const featuredProductIds = [
 ]
 
 export const categoryTiles = [
-  { id: 'powder', label: 'Powder', img: '/assets/products/sandalwood-powder.jpg' },
-  { id: 'pieces1', label: 'Pieces', img: '/assets/products/pieces-no1.jpg' },
-  { id: 'logs', label: 'Logs', img: '/assets/products/logs-no1.jpg' },
-  { id: 'chips', label: 'Chips', img: '/assets/products/sandalwood-chips.jpg' },
-  { id: 'heartwood', label: 'Heartwood', img: '/assets/products/heartwood.jpg' },
-  { id: 'scented', label: 'Scented Pieces', img: '/assets/products/scented-pieces.jpg' },
+  { id: 'powder', label: 'Powder', img: asset('assets/products/sandalwood-powder.jpg') },
+  { id: 'pieces1', label: 'Pieces', img: asset('assets/products/pieces-no1.jpg') },
+  { id: 'logs', label: 'Logs', img: asset('assets/products/logs-no1.jpg') },
+  { id: 'chips', label: 'Chips', img: asset('assets/products/sandalwood-chips.jpg') },
+  { id: 'heartwood', label: 'Heartwood', img: asset('assets/products/heartwood.jpg') },
+  { id: 'scented', label: 'Scented Pieces', img: asset('assets/products/scented-pieces.jpg') },
 ]
 
 export const productOptions = products.map((p) => p.title)

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
+import { asset } from '../utils/asset'
 
 export default function Quality() {
   return (
@@ -46,7 +47,7 @@ export default function Quality() {
           </div>
           <div className="quality-art" data-reveal>
             <img
-              src="/assets/products/pieces-no1.jpg"
+              src={asset('assets/products/pieces-no1.jpg')}
               alt="Sandalwood pieces prepared for commercial supply"
               loading="lazy"
             />

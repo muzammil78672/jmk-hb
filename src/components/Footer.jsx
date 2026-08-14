@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { site } from '../data/site'
+import { asset } from '../utils/asset'
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -10,7 +11,7 @@ export default function Footer() {
         <div className="footer-brand">
           <img
             className="footer-logo-mark"
-            src="/assets/brand/logo-mark.svg"
+            src={asset('assets/brand/logo-mark.svg')}
             alt={site.name}
             width={72}
             height={72}

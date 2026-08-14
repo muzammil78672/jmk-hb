@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import { site } from '../data/site'
+import { asset } from '../utils/asset'
 
 export default function About() {
   return (
@@ -30,7 +31,7 @@ export default function About() {
           <div className="story-card" data-reveal>
             <img
               className="about-logo-card"
-              src="/assets/brand/logo-card.png"
+              src={asset('assets/brand/logo-card.png')}
               alt={`${site.name} official identity`}
             />
             <div className="eyebrow">Established</div>

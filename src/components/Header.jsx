@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import { site } from '../data/site'
+import { asset } from '../utils/asset'
 
 const links = [
   { to: '/', label: 'Home', end: true },
@@ -62,7 +63,7 @@ export default function Header() {
         <Link className="brand" to="/" onClick={() => setOpen(false)} aria-label={site.name}>
           <img
             className="brand-mark-img"
-            src="/assets/brand/logo-mark.svg"
+            src={asset('assets/brand/logo-mark.svg')}
             alt=""
             width={44}
             height={44}

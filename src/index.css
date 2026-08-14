@@ -842,7 +842,7 @@ section {
 .cta-band {
   background:
     linear-gradient(120deg, rgba(12, 22, 16, 0.88), rgba(36, 22, 12, 0.82)),
-    url("/assets/products/heartwood.jpg") center / cover;
+    var(--img-cta-band) center / cover;
   color: #fff;
   padding: 72px 0;
 }
@@ -1571,7 +1571,7 @@ section {
 .page-hero {
   background:
     linear-gradient(115deg, rgba(10, 18, 12, 0.72), rgba(18, 28, 20, 0.55)),
-    url("/assets/products/hero-warm-wood.jpg") center / cover;
+    var(--img-page-hero) center / cover;
   color: #fff;
   padding: 88px 0 76px;
   position: relative;
