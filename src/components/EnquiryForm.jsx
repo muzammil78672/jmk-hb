@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { productOptions as DEFAULT_OPTIONS } from '../data/products'
 import { site } from '../data/site'
@@ -40,10 +40,11 @@ function buildWhatsAppMessage(form) {
   ].join('\n')
 }
 
-function isFormSubmitOk(data) {
-  if (!data || typeof data !== 'object') return false
-  const value = data.success
-  return value === true || value === 'true' || value === 'ok'
+function contactThankYouUrl() {
+  const base = import.meta.env.BASE_URL || '/'
+  const path = `${base.replace(/\/?$/, '/') }contact?sent=1`
+  if (typeof window === 'undefined') return path
+  return `${window.location.origin}${path}`
 }
 
 export default function EnquiryForm({
@@ -54,11 +55,19 @@ export default function EnquiryForm({
 }) {
   const id = useId()
   const formRef = useRef(null)
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [form, setForm] = useState(empty)
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
   const [errorMsg, setErrorMsg] = useState('')
-  const [serverMsg, setServerMsg] = useState('')
+
+  const nextUrl = useMemo(() => contactThankYouUrl(), [])
+  const subject = `JMK Enquiry · ${form.market || 'General'} · ${form.product || 'Product'}`
+
+  useEffect(() => {
+    if (searchParams.get('sent') === '1') {
+      setStatus('success')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const product = searchParams.get('product')
@@ -84,10 +93,14 @@ export default function EnquiryForm({
 
   function update(field) {
     return (e) => {
-      if (status !== 'idle') {
+      if (status !== 'idle' && status !== 'submitting') {
         setStatus('idle')
         setErrorMsg('')
-        setServerMsg('')
+        if (searchParams.get('sent') === '1') {
+          const next = new URLSearchParams(searchParams)
+          next.delete('sent')
+          setSearchParams(next, { replace: true })
+        }
       }
       setForm((prev) => ({ ...prev, [field]: e.target.value }))
     }
@@ -118,59 +131,13 @@ export default function EnquiryForm({
     return true
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (status === 'submitting') return
-    if (!validate()) return
-
-    setStatus('submitting')
-    setErrorMsg('')
-    setServerMsg('')
-
-    const subject = `JMK Enquiry · ${form.market || 'General'} · ${form.product || 'Product'}`
-
-    // FormData is the most reliable FormSubmit path from browsers.
-    const body = new FormData()
-    body.append('name', form.name.trim())
-    body.append('company', form.company.trim() || '—')
-    body.append('email', form.email.trim())
-    body.append('phone', form.phone.trim())
-    body.append('market', form.market)
-    body.append('location', form.location.trim() || '—')
-    body.append('product', form.product)
-    body.append('requirement', form.requirement.trim() || '—')
-    body.append('_subject', subject)
-    body.append('_template', 'table')
-    body.append('_captcha', 'false')
-    body.append('_replyto', form.email.trim())
-    body.append('_cc', site.formSubmitCc)
-
-    try {
-      const res = await fetch(site.formSubmitEndpoint, {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body,
-      })
-
-      const data = await res.json().catch(() => null)
-
-      if (!res.ok || !isFormSubmitOk(data)) {
-        throw new Error(
-          data?.message ||
-            'Could not send enquiry. Please try WhatsApp or email us directly.',
-        )
-      }
-
-      setServerMsg(typeof data?.message === 'string' ? data.message : '')
-      setStatus('success')
-      setForm(empty)
-    } catch (err) {
-      setStatus('error')
-      setErrorMsg(
-        err?.message ||
-          'Something went wrong. Please try WhatsApp or email us directly.',
-      )
+  function handleSubmit(e) {
+    if (!validate()) {
+      e.preventDefault()
+      return
     }
+    // Native POST to FormSubmit (avoids AJAX activation-loop issues).
+    setStatus('submitting')
   }
 
   function handleWhatsApp(e) {
@@ -197,9 +164,18 @@ export default function EnquiryForm({
     <form
       ref={formRef}
       className="enquiry-form"
+      action={site.formSubmitEndpoint}
+      method="POST"
       onSubmit={handleSubmit}
       noValidate
     >
+      {/* FormSubmit controls — do not send _captcha=false (causes activation loops). */}
+      <input type="hidden" name="_next" value={nextUrl} />
+      <input type="hidden" name="_subject" value={subject} />
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_cc" value={site.formSubmitCc} />
+      <input type="hidden" name="_replyto" value={form.email.trim()} />
+
       <div className="form-grid">
         <div className="field">
           <Label htmlFor={`${id}-name`} required>
@@ -352,27 +328,21 @@ export default function EnquiryForm({
       </div>
 
       <p className="form-hint">
-        Fill all required fields above, then send. Enquiries go to our sales email; WhatsApp
-        is also available.
+        You may briefly leave this page while FormSubmit delivers the email, then return
+        here automatically.
       </p>
 
       {status === 'success' && (
         <div className="form-success" role="status">
           <p>
-            <strong>Submitted to FormSubmit.</strong> Check these inboxes (and Spam /
-            Promotions):
+            <strong>Enquiry submitted.</strong> Check <strong>{site.email}</strong> and{' '}
+            <strong>{site.formSubmitCc}</strong> (including Spam).
           </p>
-          <ul>
-            <li>
-              <strong>{site.email}</strong> — open any email from FormSubmit and click{' '}
-              <em>Confirm / Activate</em> (required once). Then submit the form again.
-            </li>
-            <li>
-              After activation, new enquiries arrive here and are CC’d to{' '}
-              <strong>{site.formSubmitCc}</strong>.
-            </li>
-          </ul>
-          {serverMsg ? <p className="form-server-msg">{serverMsg}</p> : null}
+          <p>
+            If you only see “activate your form” emails, open the latest FormSubmit message
+            and click Activate once more — then send a second test. Do not use disable-captcha
+            until normal enquiry emails are arriving.
+          </p>
         </div>
       )}
 

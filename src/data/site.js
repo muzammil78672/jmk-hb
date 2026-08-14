@@ -10,7 +10,7 @@ export const site = {
   contactBlurb:
     'One catalogue for both markets — domestic supply across India and international trade enquiries.',
   email: 'jmk.hb.sales53@gmail.com',
-  /** FormSubmit.co AJAX endpoint — confirm the inbox once on first live submission. */
+  /** Native FormSubmit HTML POST. Do not use AJAX + _captcha=false (activation loop). */
   formSubmitEndpoint: 'https://formsubmit.co/jmk.hb.sales53@gmail.com',
   formSubmitCc: 'cmuzammil786@gmail.com',
   phones: [
