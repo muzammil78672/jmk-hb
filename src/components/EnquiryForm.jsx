@@ -173,7 +173,6 @@ export default function EnquiryForm({
       <input type="hidden" name="_next" value={nextUrl} />
       <input type="hidden" name="_subject" value={subject} />
       <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_cc" value={site.formSubmitCc} />
       <input type="hidden" name="_replyto" value={form.email.trim()} />
 
       <div className="form-grid">
@@ -335,8 +334,8 @@ export default function EnquiryForm({
       {status === 'success' && (
         <div className="form-success" role="status">
           <p>
-            <strong>Enquiry submitted.</strong> Check <strong>{site.email}</strong> and{' '}
-            <strong>{site.formSubmitCc}</strong> (including Spam).
+            <strong>Enquiry submitted.</strong> Check <strong>{site.email}</strong>{' '}
+            (including Spam).
           </p>
           <p>
             If you only see “activate your form” emails, open the latest FormSubmit message

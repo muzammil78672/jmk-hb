@@ -12,7 +12,6 @@ export const site = {
   email: 'jmk.hb.sales53@gmail.com',
   /** Native FormSubmit HTML POST. Do not use AJAX + _captcha=false (activation loop). */
   formSubmitEndpoint: 'https://formsubmit.co/jmk.hb.sales53@gmail.com',
-  formSubmitCc: 'cmuzammil786@gmail.com',
   phones: [
     { display: '+91 94250 92352', href: 'tel:+919425092352' },
     { display: '+91 94250 92172', href: 'tel:+919425092172' },
