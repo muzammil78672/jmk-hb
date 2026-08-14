@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { productOptions as DEFAULT_OPTIONS } from '../data/products'
 import { site } from '../data/site'
@@ -12,7 +12,6 @@ const empty = {
   location: '',
   product: '',
   requirement: '',
-  _honey: '',
 }
 
 function Label({ htmlFor, children, required }) {
@@ -41,6 +40,12 @@ function buildWhatsAppMessage(form) {
   ].join('\n')
 }
 
+function isFormSubmitOk(data) {
+  if (!data || typeof data !== 'object') return false
+  const value = data.success
+  return value === true || value === 'true' || value === 'ok'
+}
+
 export default function EnquiryForm({
   companyRequired = false,
   locationRequired = false,
@@ -48,6 +53,8 @@ export default function EnquiryForm({
   productOptions = DEFAULT_OPTIONS,
 }) {
   const id = useId()
+  const formRef = useRef(null)
+  const honeyRef = useRef(null)
   const [searchParams] = useSearchParams()
   const [form, setForm] = useState(empty)
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
@@ -68,6 +75,13 @@ export default function EnquiryForm({
     }))
   }, [searchParams, productOptions])
 
+  useEffect(() => {
+    if (status !== 'success') return
+    formRef.current
+      ?.querySelector('.form-success')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [status])
+
   function update(field) {
     return (e) => {
       if (status !== 'idle') {
@@ -78,10 +92,43 @@ export default function EnquiryForm({
     }
   }
 
+  function validate() {
+    const missing = []
+    if (!form.name.trim()) missing.push('Your Name')
+    if (companyRequired && !form.company.trim()) missing.push('Company Name')
+    if (!form.email.trim()) missing.push('Email')
+    if (!form.phone.trim()) missing.push('Phone / WhatsApp')
+    if (!form.market) missing.push('Market')
+    if (locationRequired && !form.location.trim()) missing.push('Location')
+    if (!form.product) missing.push('Product')
+    if (requirementRequired && !form.requirement.trim()) {
+      missing.push('Requirement / Quantity')
+    }
+
+    if (missing.length) {
+      setStatus('error')
+      setErrorMsg(`Please fill: ${missing.join(', ')}.`)
+      const firstInvalid = formRef.current?.querySelector(':invalid')
+      firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      firstInvalid?.focus?.()
+      return false
+    }
+
+    return true
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
-    if (form._honey) return
     if (status === 'submitting') return
+
+    // Bots that fill the honeypot — fake success, do not send.
+    if (honeyRef.current?.value) {
+      setStatus('success')
+      setForm(empty)
+      return
+    }
+
+    if (!validate()) return
 
     setStatus('submitting')
     setErrorMsg('')
@@ -89,21 +136,19 @@ export default function EnquiryForm({
     const subject = `JMK Enquiry · ${form.market || 'General'} · ${form.product || 'Product'}`
 
     const payload = {
-      name: form.name,
-      company: form.company || '—',
-      email: form.email,
-      phone: form.phone,
+      name: form.name.trim(),
+      company: form.company.trim() || '—',
+      email: form.email.trim(),
+      phone: form.phone.trim(),
       market: form.market,
-      location: form.location || '—',
+      location: form.location.trim() || '—',
       product: form.product,
-      requirement: form.requirement || '—',
+      requirement: form.requirement.trim() || '—',
       _subject: subject,
       _template: 'table',
-      _captcha: false,
-      _honey: form._honey,
-      _replyto: form.email,
+      _captcha: 'false',
+      _replyto: form.email.trim(),
       _cc: site.formSubmitCc,
-      _autoresponse: `Thank you for contacting ${site.name} (${site.division}). We have received your enquiry and will respond shortly.`,
     }
 
     try {
@@ -116,10 +161,13 @@ export default function EnquiryForm({
         body: JSON.stringify(payload),
       })
 
-      const data = await res.json().catch(() => ({}))
+      const data = await res.json().catch(() => null)
 
-      if (!res.ok) {
-        throw new Error(data.message || 'Could not send enquiry. Please try again.')
+      if (!res.ok || !isFormSubmitOk(data)) {
+        throw new Error(
+          data?.message ||
+            'Could not send enquiry. Please try WhatsApp or email us directly.',
+        )
       }
 
       setStatus('success')
@@ -128,14 +176,14 @@ export default function EnquiryForm({
       setStatus('error')
       setErrorMsg(
         err?.message ||
-          'Something went wrong. Please email us directly or try WhatsApp.',
+          'Something went wrong. Please try WhatsApp or email us directly.',
       )
     }
   }
 
   function handleWhatsApp(e) {
-    const formEl = e.currentTarget.form
-    if (formEl && !formEl.reportValidity()) return
+    e.preventDefault()
+    if (!validate()) return
     const body = buildWhatsAppMessage(form)
     window.open(
       `${site.whatsapp}?text=${encodeURIComponent(body)}`,
@@ -154,14 +202,18 @@ export default function EnquiryForm({
   const busy = status === 'submitting'
 
   return (
-    <form className="enquiry-form" onSubmit={handleSubmit} noValidate={false}>
-      {/* Honeypot — hidden from users, blocks basic bots */}
+    <form
+      ref={formRef}
+      className="enquiry-form"
+      onSubmit={handleSubmit}
+      noValidate
+    >
+      {/* Honeypot — not controlled by React, so autofill does not block real users */}
       <input
+        ref={honeyRef}
         className="hp-field"
         type="text"
         name="_honey"
-        value={form._honey}
-        onChange={update('_honey')}
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
@@ -319,14 +371,13 @@ export default function EnquiryForm({
       </div>
 
       <p className="form-hint">
-        Enquiries are emailed to our sales team. WhatsApp is available if you prefer a
-        quick chat.
+        Fill all required fields above, then send. Enquiries go to our sales email; WhatsApp
+        is also available.
       </p>
 
       {status === 'success' && (
         <p className="form-success" role="status">
-          Thank you — your enquiry was sent. Our team will reply shortly. You should also
-          receive a short confirmation email.
+          Thank you — your enquiry was sent. Our team will reply shortly.
         </p>
       )}
 
