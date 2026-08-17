@@ -78,11 +78,8 @@ export default function Home() {
       <section className="trust" aria-label="Credentials">
         <div className="container trust-line">
           <span>Since {site.established}</span>
-          <span className="trust-dot" aria-hidden="true" />
           <span>Ujjain, Madhya Pradesh</span>
-          <span className="trust-dot" aria-hidden="true" />
           <span>Domestic · India</span>
-          <span className="trust-dot" aria-hidden="true" />
           <span>International trade</span>
         </div>
       </section>

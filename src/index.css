@@ -429,6 +429,7 @@ header {
 
 /* Trust */
 .trust {
+  padding: 0;
   background: rgba(238, 241, 235, 0.9);
   border-bottom: 1px solid var(--line);
 }
@@ -438,8 +439,8 @@ header {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 10px 14px;
-  padding: 18px 0;
+  gap: 8px 0;
+  padding: 16px 0;
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -447,12 +448,21 @@ header {
   color: var(--muted);
 }
 
-.trust-dot {
+.trust-line > span {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.trust-line > span:not(:last-child)::after {
+  content: '';
   width: 4px;
   height: 4px;
+  margin: 0 14px;
   border-radius: 50%;
   background: var(--gold);
   opacity: 0.7;
+  flex-shrink: 0;
 }
 
 .hero-lede {
@@ -2238,16 +2248,27 @@ footer p {
     font-size: 1rem;
   }
 
-  .trust-line {
-    justify-content: flex-start;
-    gap: 8px 12px;
-    font-size: 0.72rem;
+  .trust {
+    padding: 0;
   }
 
-  .trust-dot:nth-of-type(3),
-  .trust-line span:nth-of-type(5),
-  .trust-dot:nth-of-type(4),
-  .trust-line span:nth-of-type(7) {
+  .trust-line {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 12px;
+    padding: 14px 0;
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    text-align: center;
+  }
+
+  .trust-line > span {
+    display: block;
+    white-space: normal;
+    line-height: 1.35;
+  }
+
+  .trust-line > span:not(:last-child)::after {
     display: none;
   }
 
